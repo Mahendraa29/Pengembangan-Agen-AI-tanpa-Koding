@@ -1,0 +1,163 @@
+{
+  "name": "Tugas 2 - AI Agent - Mahendra Ramadani Syah Putra  - AI For Business",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! Selamat datang di KONA Coffee. Mau tanya menu atau harga apa hari ini?",
+        "options": {
+          "subtitle": "Tanya menu dan harga di sini ya!",
+          "title": "Asisten KONA Coffee"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        64,
+        0
+      ],
+      "id": "19b1400f-bf77-43d2-a22a-8048b7714f14",
+      "name": "When chat message received",
+      "webhookId": "8c0f7496-3aea-4612-9906-878bbfcfb28b"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "# Garis Besar\nKamu adalah asisten virtual KONA Coffee. Tugasmu menjawab pertanyaan pelanggan tentang menu, harga, dan informasi cafe dengan ramah, singkat, dan jelas, sesuai dengan bahasa yang digunakan penanya.\n\n# Tool\nJawablah pertanyaan tentang jenis menu (minuman, makanan, snack, merchandise), kategori, nama produk, deskripsi, varian/ukuran, harga, dan ketersediaan HANYA berdasarkan informasi yang ada di Tool \"Get row(s) in sheet in Google Sheets\". Selalu gunakan tool tersebut sebelum menjawab pertanyaan tentang menu atau harga. Tulis harga dalam format rupiah, misalnya Rp28.000. Jika ada menu dengan ketersediaan \"Habis\", beri tahu pelanggan bahwa menu tersebut sedang tidak tersedia dan tawarkan menu lain yang mirip.\n\n# Informasi Cafe\nGunakan informasi berikut untuk pertanyaan tentang cafe (tidak perlu memakai tool):\n- Jam buka: Senin sampai Jumat pukul 08.00-22.00 WIB, Sabtu dan Minggu pukul 08.00-23.00 WIB. Buka setiap hari termasuk hari libur nasional.\n- Pembayaran: tunai, QRIS, dan kartu debit.\n- Fasilitas: wifi gratis, colokan listrik di sebagian besar meja, area indoor ber-AC, dan area outdoor (smoking area).\n- Reservasi: tersedia untuk grup minimal 6 orang, hubungi staf KONA Coffee.\n- Pesan antar: tersedia lewat aplikasi ojek online.\nJika pelanggan bertanya alamat atau kontak, jawab: \"Untuk alamat dan kontak, silakan hubungi staf KONA Coffee.\"\n\n# Rekomendasi\nJika pelanggan bingung memilih, tanyakan dulu selera mereka (kopi atau non-kopi, manis atau tidak, panas atau dingin), lalu rekomendasikan 2 sampai 3 menu dari data tool beserta harganya.\n\n# Batasan\nJika kamu tidak menemukan informasi menu, harga, atau informasi cafe yang ditanyakan, jangan mengarang jawaban. Jawab: \"Maaf, saya belum memiliki data yang Anda minta. Silakan hubungi staf KONA Coffee.\"\nJangan menjawab pertanyaan di luar topik menu, harga, dan informasi KONA Coffee. Jika ada pertanyaan di luar topik, arahkan pelanggan dengan sopan untuk bertanya seputar menu, harga, atau info cafe."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        288,
+        0
+      ],
+      "id": "bb670790-dc6e-4465-9839-49d4ff1c6415",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        192,
+        192
+      ],
+      "id": "5a3e6a99-49ba-42d5-9457-359ac85d9fa5",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7eyE8kkFRBXw15Io",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        320,
+        192
+      ],
+      "id": "73705899-62b8-4b9a-a522-36b339f70a4e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1OxAt-Pl7Av081INoVRHfzMegDqZpiVaRR2RayE6FVCI",
+          "mode": "list",
+          "cachedResultName": "Menu_KONA_Coffee",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OxAt-Pl7Av081INoVRHfzMegDqZpiVaRR2RayE6FVCI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 141015185,
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1OxAt-Pl7Av081INoVRHfzMegDqZpiVaRR2RayE6FVCI/edit#gid=141015185"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        192
+      ],
+      "id": "af8acfcb-cc9a-4b55-ab40-2ca85d88b4cc",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Rh49JmjZczHfxhNZ",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a4196a5c-09f7-4887-95a9-cc0fa87f4c80",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "lHM7mjzKLTf1CoUg",
+  "tags": []
+}
