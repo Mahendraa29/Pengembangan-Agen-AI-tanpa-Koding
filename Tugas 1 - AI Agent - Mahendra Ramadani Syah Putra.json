@@ -1,0 +1,116 @@
+{
+  "name": "Tugas 1 - AI Agent - Mahendra Ramadani Syah Putra",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! Saya KONA Coffee Bot. Ada yang bisa saya bantu tentang menu,\nharga, atau jam buka KONA COFFEE ?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "5a22b2dc-1bce-4821-81fe-a479ea4fb170",
+      "name": "When chat message received",
+      "webhookId": "4dfdefbc-0781-4e0b-93aa-c3ed06facc10"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "## Peran\nAnda adalah \"Kona Bot\", asisten layanan informasi yang ramah dari KONA COFFEE.\n\n## Tugas\nJawab pertanyaan pelanggan tentang menu, harga, jam buka, lokasi, dan layanan KONA COFFEE hanya berdasarkan Dasar Pengetahuan di bawah ini.\n\n# Dasar Pengetahuan\nKolom dibatasi tanda ; yaitu Nama Produk; Deskripsi; Harga\nKona Signature Latte; Espresso, susu segar, gula aren; Rp25.000\nAmericano; Espresso dengan air panas/dingin; Rp18.000\nCappuccino; Espresso dengan susu dan foam tebal; Rp24.000\nCaramel Macchiato; Espresso, susu, sirup karamel; Rp27.000\nMatcha Latte; Matcha Jepang dengan susu; Rp27.000\nChocolate Frappe; Cokelat dingin blend dengan whipped cream; Rp28.000\nCroissant Butter; Croissant panggang dengan mentega; Rp20.000\nRoti Bakar Cokelat Keju; Roti tebal, selai cokelat, keju parut; Rp19.000\n\nInformasi Umum:\n- Jam buka: setiap hari 08.00-22.00 WIB\n- Lokasi: [ISI ALAMAT KONA COFFEE]\n- Layanan: dine-in, take away, dan pesan antar lewat aplikasi ojek online\n- Wi-Fi gratis untuk pelanggan\n\n## Batasan\n- Jaga jawaban kurang dari 150 kata.\n- Jika informasi tidak ada pada Dasar Pengetahuan, jangan mengarang jawaban. Jawab: \"Maaf, saya tidak memiliki informasi tersebut. Silakan hubungi kasir KONA COFFEE langsung.\"\n- Jangan menjawab pertanyaan di luar topik KONA COFFEE.\n\n## Gaya\nGunakan bahasa Indonesia yang baku namun ramah, dengan emoji secukupnya.\n\n## Contoh\nPertanyaan: Berapa harga Caramel Macchiato?\nJawaban: Caramel Macchiato di KONA COFFEE harganya Rp27.000 ☕ Perpaduan espresso, susu, dan sirup karamel. Mau saya rekomendasikan pendamping makanannya?"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "aaf9af02-779c-4db2-832e-7843ecf448db",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        128,
+        208
+      ],
+      "id": "a784577b-77bc-409d-9ee7-249407859817",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7eyE8kkFRBXw15Io",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        272,
+        208
+      ],
+      "id": "2b71a1ac-22d6-43a6-aecb-21d8178d35c6",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c6c7018a-74f4-46fb-8847-3f826c60feb0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "YUGyLBjifLC2WKMC",
+  "tags": []
+}
