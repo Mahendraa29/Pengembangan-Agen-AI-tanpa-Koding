@@ -1,0 +1,173 @@
+{
+  "name": "Tugas 4 - Chatbot - Mahendra Ramadani Syah Putra",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! 👋 Saya asisten virtual NF Academy.\nSaya bisa bantu info produk pelatihan, harga, durasi, dan ketersediaan kelas. Mau tanya apa?",
+        "options": {
+          "title": "Asisten Produk NF Academy"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -16,
+        -80
+      ],
+      "id": "d21093bc-f04b-4f5a-9215-d97ba2082ee1",
+      "name": "When chat message received",
+      "webhookId": "ec5a6165-0670-40ba-842f-54802a4dc413"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Kamu adalah asisten virtual NF Academy yang bertugas menjawab pertanyaan calon peserta tentang PRODUK PELATIHAN dan HARGANYA.\n\nAturan:\n1. Untuk setiap pertanyaan tentang produk, harga, durasi, kategori, metode, atau ketersediaan, SELALU gunakan tool \"Get row(s) in sheet in Google Sheets\" untuk membaca data terbaru sebelum menjawab.\n2. Jawab HANYA berdasarkan data dari tool. Jangan mengarang produk, harga, atau diskon.\n3. Jika produk yang ditanyakan tidak ada di data, katakan dengan sopan bahwa produk tersebut tidak tersedia dan tawarkan produk lain yang mirip.\n4. Tulis harga dalam format Rupiah, contoh: Rp1.500.000.\n5. Jika kolom Status berisi \"Penuh\", beritahu bahwa kelas sedang penuh.\n6. Jika pertanyaan di luar topik produk dan harga pelatihan, jawab singkat bahwa kamu hanya dapat membantu soal produk dan harga pelatihan.\n7. Gunakan bahasa Indonesia yang ramah, singkat, dan jelas."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        208,
+        -80
+      ],
+      "id": "cce93d22-500e-4074-b156-175ad20d951c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        112
+      ],
+      "id": "4ffd7664-4445-40b5-83a9-b87009b4fde4",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7eyE8kkFRBXw15Io",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        256,
+        112
+      ],
+      "id": "192e4ed3-6890-402c-aaad-c62989a4e021",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BFrd1zTWDPXIIcoDFR5UvuMnkLr1e2HA1APm1GC9wpk",
+          "mode": "list",
+          "cachedResultName": "Data Produk Pelatihan",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BFrd1zTWDPXIIcoDFR5UvuMnkLr1e2HA1APm1GC9wpk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1213663926,
+          "mode": "list",
+          "cachedResultName": "Sheet 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BFrd1zTWDPXIIcoDFR5UvuMnkLr1e2HA1APm1GC9wpk/edit#gid=1213663926"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        400,
+        112
+      ],
+      "id": "70883c14-cec8-4b16-aebc-4d5a9e55cbb9",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "Rh49JmjZczHfxhNZ",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        240,
+        240
+      ],
+      "id": "624b3f97-06db-4033-bd30-c8636912a0c9",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "c2f44d44-20fd-4144-a7d5-45053c670c3f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "nBAntr8lThHyBUlA",
+  "tags": []
+}
