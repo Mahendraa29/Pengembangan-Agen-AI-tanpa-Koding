@@ -1,0 +1,185 @@
+{
+  "name": "Tugas 4 - RAG AI Agent - Mahendra Ramadani Syah Putra - AI For Business 1",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Kamu adalah asisten yang membantu penulisan ilmiah untuk tugas akhir (TA/skripsi) mahasiswa S1.\n\nSelalu gunakan tool Supabase Vector Store untuk mencari informasi sebelum menjawab. Topik yang dapat dibantu: kriteria judul, Bab I sampai Bab V, abstrak, daftar referensi, serta format dan sitasi IEEE.\n\nJika informasi tidak tersedia dalam database yang disediakan, jangan menjawab dengan mengarang sendiri, tetapi berikan jawaban: \"Maaf, saya belum dapat menjawab karena saya tidak menemukan informasinya dalam data yang tersedia.\"\n\nJawablah dalam bahasa Indonesia yang jelas dan ringkas."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        480,
+        928
+      ],
+      "id": "b3a1b735-53b7-4016-9b17-2c2fcafe365a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        400,
+        1120
+      ],
+      "id": "cb66009e-241e-4ce2-a43d-529d32ff0b09",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7eyE8kkFRBXw15Io",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        560,
+        1120
+      ],
+      "id": "3bc27922-3f0e-4ea3-add7-de0b9cb60846",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Panggil tool ini untuk menjawab pertanyaan tentang penulisan ilmiah tugas akhir (skripsi), yaitu kriteria judul, isi Bab I sampai Bab V, abstrak, daftar referensi, format penulisan, dan sitasi IEEE.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list",
+          "cachedResultName": "documents"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        1120
+      ],
+      "id": "9ce8a337-4c58-4a7f-bdd7-b14246f62df6",
+      "name": "Supabase Vector Store",
+      "credentials": {
+        "supabaseApi": {
+          "id": "7UVCa1BugLQwqh8l",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        704,
+        1328
+      ],
+      "id": "7c23b994-0d95-4b9a-b212-4d83a73ab5b4",
+      "name": "Embeddings Google Gemini",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "7eyE8kkFRBXw15Io",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Halo! 👋 Saya Asisten AI yang siap membantu Anda menavigasi pedoman penulisan skripsi dan tugas akhir. \n\nAnda bisa bertanya tentang kriteria judul yang baik, struktur bab, atau tata cara pengutipan. Apa yang ingin Anda diskusikan hari ini?",
+        "options": {
+          "subtitle": "Panduan Cerdas Penulisan Tugas Akhir",
+          "title": "🎓 Asisten Skripsi AI"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        288,
+        928
+      ],
+      "id": "b611ffc2-f956-4118-b39b-b063ec9b5d8e",
+      "name": "When chat message received",
+      "webhookId": "4092912c-622e-4501-bcbd-2200f56ecfb0"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b7c745c3-6e42-4774-a8f4-6a07124ed7cc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "ALLaekQwNr5GvWYx",
+  "tags": []
+}
